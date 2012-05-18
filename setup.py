@@ -9,7 +9,7 @@ else:
     setup_requires = []
 
 tests_require = [
-    'Django>=1.2,<1.4',
+    'Django>=1.2,<1.5',
     'mock',
     'nose',
     'psycopg2',
@@ -19,6 +19,7 @@ tests_require = [
 
 install_requires = [
     'nydus>=0.9.0',
+    'Django>=1.2,<1.5',
 ]
 
 setup(
