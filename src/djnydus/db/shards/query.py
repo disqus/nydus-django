@@ -74,8 +74,6 @@ class PartitionQuerySetBase(object):
         return clone
 
     def iterator(self):
-        
-        
         assert self.model.db_table, "You must filter on a routing key before performing additional operations" \
             " on this queryset."
 

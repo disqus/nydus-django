@@ -16,7 +16,13 @@ from django.conf import settings
 
 __all__ = ('DjangoDatabase',)
 
-conf.configure(getattr(settings, 'NYDUS_CONFIG', {}))
+
+def configure(settings):
+    connections = getattr(settings, 'NYDUS_CONNECTIONS', {})
+
+    conf.configure({'CONNECTIONS': connections})
+
+configure(settings)
 
 
 class DjangoDatabase(BaseConnection):
@@ -30,6 +36,7 @@ class DjangoDatabase(BaseConnection):
             backend = import_string(backend)
         self.backend = backend
         self.settings_dict = {
+            'ENGINE': backend,
             'HOST': host,
             'PORT': port,
             'NAME': name,
@@ -41,22 +48,23 @@ class DjangoDatabase(BaseConnection):
         self.wrapper = __import__('%s.base' % (backend.__name__,), {}, {}, ['DatabaseWrapper']).DatabaseWrapper(self.settings_dict)
         super(DjangoDatabase, self).__init__(**kwargs)
 
+    # def __getattr__(self, attr):
+    #     if attr in self.__dict__:
+    #         return self.__dict__[attr]
+
+    #     # Send to router
+    #     print self.wrapper
+    #     return getattr(self.wrapper, attr)
+
     def connect(self):
         # force django to connect
         self.wrapper.cursor()
-        return self.wrapper.connection
+        return self.wrapper
 
     def disconnect(self):
-        self.connection.close()
-
-    def __getattr__(self, attr):
-        if attr in self.__dict__:
-            return self.__dict__[attr]
-        else:
-            # Send to router
-            return getattr(self.connection, attr)
+        self.wrapper.close()
 
     @property
     def identifier(self):
-        settings = ["%s=%s" % i for i in self.settings_dict.items()]
-        return self.backend.__name__ + ' '.join(settings)
+        settings = ["%s=%s" % i for i in sorted(self.settings_dict.items()) if i[0] != 'ENGINE']
+        return '%s %s' % (self.backend.__name__, ' '.join(settings))

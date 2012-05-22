@@ -12,15 +12,8 @@ Add a Nydus connection to your settings:
 
         DATABASES = {
             'myshards': {
-                'ENGINE': 'djnydus.db',
-                'NAME': 'django/myshards',
-            },
-        }
-
-        NYDUS_CONFIG = {
-            'CONNECTIONS': {
-                'django/myshards': {
-                    'engine': 'djnydus.db.DjangoDatabase',
+                'ENGINE': 'djnydus.db.backend',
+                'OPTIONS': {
                     'defaults': {
                         'backend': 'django.db.backends.postgresql_psycopg2', 
                         'name': 'myshards',
@@ -31,7 +24,7 @@ Add a Nydus connection to your settings:
                         2: {'host': '192.168.0.102'},
                         3: {'host': '192.168.0.103'},
                     },
-                },
+                }
             },
         }
 
