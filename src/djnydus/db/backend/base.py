@@ -57,11 +57,6 @@ class DatabaseCreation(object):
 
         return test_database_name
 
-    # def __getattr__(self, name):
-    #     if name in self.__dict__:
-    #         return self.__dict__[name]
-    #     return getattr(self.cluster.creation, name)
-
 
 class DatabaseWrapper(object):
     def __init__(self, settings_dict, alias=DEFAULT_DB_ALIAS):
