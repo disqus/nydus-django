@@ -13,8 +13,13 @@ if not settings.configured:
             'default': {
                 'ENGINE': 'djnydus.db.backend',
                 'OPTIONS': {
+                    'defaults': {
+                        'backend': 'django.db.backends.sqlite3',
+                        'name': ':memory:'
+                    },
                     'hosts': {
-                        0: {'backend': 'django.db.backends.sqlite3', 'name': ':memory:'},
+                        0: {},
+                        1: {},
                     },
                 }
             },

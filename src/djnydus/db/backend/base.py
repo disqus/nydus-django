@@ -8,12 +8,22 @@ djnydus.db.backend
 
 from __future__ import absolute_import
 
+import random
 import sys
 
 from django.db import DEFAULT_DB_ALIAS
 from django.db.backends.creation import TEST_DATABASE_PREFIX
 from django.core.exceptions import ImproperlyConfigured
 from nydus.db import create_cluster
+
+
+class DatabaseIntrospection(object):
+    def __init__(self, connection, cluster):
+        self.connection = connection
+        self.cluster = cluster
+
+    def __getattr__(self, attr):
+        return getattr(self.cluster.hosts[0].introspection, attr)
 
 
 class DatabaseCreation(object):
@@ -64,7 +74,8 @@ class DatabaseWrapper(object):
         self.alias = alias
 
         options = settings_dict['OPTIONS']
-        options.setdefault('engine', 'djnydus.db.DjangoDatabase')
+        options.setdefault('backend', 'djnydus.db.DjangoDatabase')
+        options.setdefault('router', 'djnydus.db.router.OrmRouter')
 
         try:
             self.cluster = create_cluster(options)
@@ -73,6 +84,7 @@ class DatabaseWrapper(object):
             raise ImproperlyConfigured('%s: %s' % (exc_info[0].__name__, exc_info[1])), None, exc_info[2]
 
         self.creation = DatabaseCreation(self, self.cluster)
+        self.introspection = DatabaseIntrospection(self, self.cluster)
 
     def __getattr__(self, name):
         if name in self.__dict__:

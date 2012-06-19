@@ -48,14 +48,6 @@ class DjangoDatabase(BaseConnection):
         self.wrapper = __import__('%s.base' % (backend.__name__,), {}, {}, ['DatabaseWrapper']).DatabaseWrapper(self.settings_dict)
         super(DjangoDatabase, self).__init__(**kwargs)
 
-    # def __getattr__(self, attr):
-    #     if attr in self.__dict__:
-    #         return self.__dict__[attr]
-
-    #     # Send to router
-    #     print self.wrapper
-    #     return getattr(self.wrapper, attr)
-
     def connect(self):
         # force django to connect
         self.wrapper.cursor()
